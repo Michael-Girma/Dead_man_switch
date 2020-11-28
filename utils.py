@@ -3,14 +3,14 @@ from cryptography.fernet import Fernet
 
 def get_switch_input():
     # TODO: apply error checking mechanism since this is a dead man's switch
-    twitter_handle = input("Twitter handle to listen on: ")
-    reset_tweet = input("Tweet to stop the dead man's switch: ")
-    kill_switch = input("Tweet to immediately destroy key(killswitch): ")
-    time_interval = input("The time interval in seconds to check for tweets: ")
+    telegram_handle = input("Telegram handle to listen on: ")
+    reset_keyword = input("keyword to stop the dead man's switch: ")
+    kill_switch = input("Keyword to immediately destroy key(kill switch): ")
+    time_interval = int(input("The time interval in seconds to check for messages: "))
     file = input("Relative path to the file that is about to be encrypted: ")
     # Check if the program has R/W privileges
 
-    return twitter_handle, reset_tweet, kill_switch, time_interval, file
+    return telegram_handle, reset_keyword, kill_switch, time_interval, file
 
 
 def encrypt_file(file_path):

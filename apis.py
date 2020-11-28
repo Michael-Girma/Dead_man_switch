@@ -1,14 +1,49 @@
-import twint
+from threading import *
 
-class init_listener:
-    def __init__(self, twitter_handle):
-        config = twint.Config()
-        config.Limit = 5
-        config.Store_object = True
-        config.Username = twitter_handle
-        self.config = config
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
-    def get_latest_tweet(self):
-        twint.run.Search(self.config)
-        tweet_object = twint.output.tweet_list[0]
-        return tweet_object
+
+class Listener:
+    def __init__(self, telegram_handle):
+        self.user_id = telegram_handle
+        self.updater = Updater("TOKEN GOES HERE", use_context=True)
+        self.polling = Thread(target = self.updater.start_polling)
+        self.new_message = False
+        self.new_update_obj = {}
+
+
+    def start_listening(self):
+        def start(update: Update, context: CallbackContext):
+            update.message.reply_text('Hope you make it back alive :=(')
+
+        def handler(update: Update, context: CallbackContext):
+            if update.message.from_user.username == self.user_id:
+                self.new_message = True
+                self.new_update_obj = update
+
+        dispatcher = self.updater.dispatcher
+        dispatcher.add_handler(CommandHandler("start", start))
+        dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handler))
+        self.polling.start()
+
+
+    def get_new_update(self):
+        update = {}
+        if self.new_message:
+            self.new_message = False
+            update = self.new_update_obj
+            self.new_update_obj = {}
+        return update
+
+
+    def stop_polling(self):
+        self.updater.stop()
+
+
+def main():
+    listener = Listener("FatSushi21")
+
+
+if __name__ == '__main__':
+    main()
